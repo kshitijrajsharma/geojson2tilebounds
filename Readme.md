@@ -29,12 +29,14 @@ Run the Streamlit app with the following command:
 streamlit run streamlit_app.py
 ```
 The app will open in your default web browser. If not, you can access it by clicking the URL provided in the terminal output.
-        
-- In the sidebar, you can either upload a GeoJSON file or enter the GeoJSON string or json directly.
-    - Adjust the zoom level using the slider.
-    - The app will generate tiles from the input GeoJSON and display them on the map.
-    - You can download the tiles GeoJSON or view the raw GeoJSON data.
-- In the sidebar, you can also split a specific tile by providing the tile coordinates (x, y, z) and the desired split zoom level.
+
+- Geojson to tile bounds 
+![tilebounds](https://github.com/kshitijrajsharma/geojson2tilebounds/assets/36752999/7a1f8389-1fed-4852-8d42-a4eebf685f53)
+
+
+- Split tiles 
+![chrome-capture-2024-3-2](https://github.com/kshitijrajsharma/geojson2tilebounds/assets/36752999/1e41abeb-0ce1-463b-82df-9649646bd49d)
+
 
 
 Note: The geojson2tiles script is also used by the Streamlit app, so any changes made to the script will be reflected in the app as well.
