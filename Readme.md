@@ -1,9 +1,9 @@
-## GeoJSON to Tiles
+## GeoJSON to Tile Bounds
 
-This project provides two tools for working with GeoJSON data and generating tiles:
+This project provides two tools for working with GeoJSON data and generating tile bounds:
 
-- A Streamlit application for converting GeoJSON polygons into tiles and visualizing the results.
-- A Python script (geojson2tiles.py) for converting GeoJSON polygons into tiles using parallel processing.
+- A Streamlit application for converting GeoJSON polygons into tile bounds and visualizing the results.
+- A Python script (geojson2tiles.py) for converting GeoJSON polygons into tile bounds using parallel processing.
 
 ## Prerequisites
 

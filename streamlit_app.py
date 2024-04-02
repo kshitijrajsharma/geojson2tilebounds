@@ -46,7 +46,7 @@ if page == "GeoJSON to Tile Bounds":
         st.header("Input GeoJSON")
         st.write(input_geojson)
 
-        with st.spinner(f"Generating tiles for zoom level {zoom_level}..."):
+        with st.spinner(f"Generating tile bounds for zoom level {zoom_level}..."):
             tiles_geom = polygon_to_tiles(input_geojson, zoom_level)
             tiles_gdf = gpd.GeoDataFrame.from_features(tiles_geom, crs="EPSG:4326")
 
