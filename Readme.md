@@ -1,6 +1,6 @@
 ## GeoJSON to Tile Bounds
 
-This tiny utility can generate the mercantile map tile bounds based on geojson geometry
+This tiny utility can generate the  XYZ style spherical mercator tiles map tile bounds based on geojson geometry. 
 
 ## Usage
 
