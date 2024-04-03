@@ -1,5 +1,6 @@
 import json
 import re
+import time
 
 import geopandas as gpd
 import matplotlib.pyplot as plt
@@ -23,12 +24,15 @@ if page == "GeoJSON to Tile Bounds":
     )
 
     input_geojson = None
+
     if input_method == "Upload GeoJSON File":
         uploaded_file = st.sidebar.file_uploader(
             "Choose a GeoJSON file", type=["geojson"]
         )
+
         if uploaded_file is not None:
             input_geojson = gpd.read_file(uploaded_file)
+
     else:
         input_geojson_str = st.sidebar.text_area("Enter GeoJSON")
         try:
@@ -47,8 +51,12 @@ if page == "GeoJSON to Tile Bounds":
         st.write(input_geojson)
 
         with st.spinner(f"Generating tile bounds for zoom level {zoom_level}..."):
+            start_time = time.time()
             tiles_geom = polygon_to_tiles(input_geojson, zoom_level)
-            tiles_gdf = gpd.GeoDataFrame.from_features(tiles_geom, crs="EPSG:4326")
+            end_time = time.time()
+
+        tiles_gdf = gpd.GeoDataFrame.from_features(tiles_geom, crs="EPSG:4326")
+        st.success(f"Number of tiles: {len(tiles_gdf)}")
 
         st.subheader("Display")
         fig, ax = plt.subplots(figsize=(8, 8))
@@ -73,6 +81,9 @@ if page == "GeoJSON to Tile Bounds":
         st.subheader("Tiles GeoJSON")
         st.json(tiles_geom, expanded=False)
 
+        st.subheader("Execution Time")
+        st.success(f"Tile bounds generation took {end_time - start_time:.2f} seconds")
+
 elif page == "Split Tile":
     st.sidebar.header("Split Tile")
     tile_input_method = st.sidebar.radio(
@@ -83,22 +94,30 @@ elif page == "Split Tile":
         tile_x = st.sidebar.number_input("Tile X", value=24025)
         tile_y = st.sidebar.number_input("Tile Y", value=13707)
         tile_z = st.sidebar.number_input("Tile Z", value=10)
+
     else:
         tile_string = st.sidebar.text_input(
-            "Enter Tile String", value="Tile(x=24025, y=13707, z=10)"
+            "Enter Tile String", value="Tile(x=24022, y=13704, z=15)"
         )
+
         tile_pattern = r"Tile\(x=(\d+), y=(\d+), z=(\d+)\)"
         match = re.match(tile_pattern, tile_string)
+
         if match:
             tile_x = int(match.group(1))
             tile_y = int(match.group(2))
             tile_z = int(match.group(3))
         else:
             st.error("Invalid tile string format")
+
     split_zoom_level = st.sidebar.number_input("Split Zoom Level", value=17)
 
     if st.sidebar.button("Split Tile"):
-        splitted_tiles = split_singe_tile(tile_x, tile_y, tile_z, split_zoom_level)
+        with st.spinner("Splitting tile..."):
+            start_time = time.time()
+            splitted_tiles = split_singe_tile(tile_x, tile_y, tile_z, split_zoom_level)
+            end_time = time.time()
+
         st.write("Splitted Tiles GeoJSON:")
         st.download_button(
             label="Download Splitted Tiles GeoJSON",
@@ -106,9 +125,17 @@ elif page == "Split Tile":
             file_name="splitted_tiles.geojson",
             mime="application/json",
         )
-        splitted_gdf = gpd.GeoDataFrame.from_features(splitted_tiles, crs="EPSG:4326")
 
+        splitted_gdf = gpd.GeoDataFrame.from_features(splitted_tiles, crs="EPSG:4326")
+        st.success(f"Number of tiles: {len(splitted_gdf)}")
+
+        st.subheader("Display")
         fig, ax = plt.subplots(figsize=(10, 10))
         splitted_gdf.boundary.plot(ax=ax, edgecolor="black", facecolor="none")
         st.pyplot(fig)
+
+        st.subheader("Tiles GeoJSON")
         st.json(splitted_tiles, expanded=False)
+
+        st.subheader("Execution Time")
+        st.success(f"Tile splitting took {end_time - start_time} seconds")
