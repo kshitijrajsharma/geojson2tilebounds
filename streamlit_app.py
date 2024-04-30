@@ -44,6 +44,7 @@ if page == "GeoJSON to Tile Bounds":
             input_geojson = None
 
     zoom_level = st.sidebar.slider("Zoom Level", min_value=2, max_value=22, value=15)
+    tiles_within = st.sidebar.checkbox("Tiles within the geojson Bounds")
 
     # Main content area
     if input_geojson is not None:
@@ -52,7 +53,7 @@ if page == "GeoJSON to Tile Bounds":
 
         with st.spinner(f"Generating tile bounds for zoom level {zoom_level}..."):
             start_time = time.time()
-            tiles_geom = polygon_to_tiles(input_geojson, zoom_level)
+            tiles_geom = polygon_to_tiles(input_geojson, zoom_level, tiles_within)
             end_time = time.time()
 
         tiles_gdf = gpd.GeoDataFrame.from_features(tiles_geom, crs="EPSG:4326")

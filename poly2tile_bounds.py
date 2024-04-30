@@ -19,7 +19,7 @@ def split_singe_tile(tile_x, tile_y, tile_z, split_zoom_level):
     return feature_collection
 
 
-def polygon_to_tiles(polygon_input, zoom_level):
+def polygon_to_tiles(polygon_input, zoom_level,tiles_within):
     input_crs = "EPSG:4326"
     if isinstance(polygon_input, gpd.GeoDataFrame):
         gdf = polygon_input
@@ -43,7 +43,7 @@ def polygon_to_tiles(polygon_input, zoom_level):
     # Parallel processing for generating tiles
     with Pool() as pool:
         features = pool.starmap(
-            process_row, [(row.geometry, zoom_level) for _, row in gdf.iterrows()]
+            process_row, [(row.geometry, zoom_level, tiles_within) for _, row in gdf.iterrows()]
         )
 
     features = sum(features, [])
@@ -55,13 +55,17 @@ def polygon_to_tiles(polygon_input, zoom_level):
     return feature_collection
 
 
-def process_row(geometry, zoom_level):
+def process_row(geometry, zoom_level, tiles_within):
     west, south, east, north = geometry.bounds
     tiles = mercantile.tiles(west, south, east, north, zooms=zoom_level)
     features = []
     for tile in tiles:
         tile_feature = mercantile.feature(tile)
         tile_geom = shape(tile_feature["geometry"])
-        if tile_geom.intersects(geometry):
-            features.append(tile_feature)
+        if tiles_within:
+            if tile_geom.within(geometry):
+                features.append(tile_feature)
+        else : 
+            if tile_geom.intersects(geometry):
+                features.append(tile_feature)
     return features
